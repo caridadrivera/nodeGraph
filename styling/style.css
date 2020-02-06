@@ -1,0 +1,26 @@
+body{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1{
+  color: grey;
+  text-align: center;
+  margin-top: 100px;
+}
+
+form-div{
+  margin-top:100px;
+}
+
+/* .input-label{
+  background: grey;
+  color: #fff;
+  padding:30px;
+} */
+
+#file{
+  visibility: hidden;
+  width: 1px;
+}
+
+
