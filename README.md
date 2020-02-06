@@ -2,10 +2,10 @@
 
 # Table of content
 
-*Introduction
-*Prerequisites
-*Technologies
-*Setup
+* Introduction
+* Prerequisites
+* Technologies
+* Setup
 
 # Introduction
 
