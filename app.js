@@ -63,8 +63,7 @@ app.post('/upload', (req, res) => {
     }
 
 
-
-
+    
     //b) all employees chart. filter out people on the board
     //I want to grab all the titles in my entry, put them in an array, filter through the array
     data.forEach((entry) => {
@@ -101,30 +100,26 @@ app.post('/upload', (req, res) => {
         });
       } else {
 
-        const allEmployeeData = formatData(employeesStartingByYear);
-        const allEmployeeChartScript = createAllEmployeeChart(allEmployeeData);
-
+      
         const leavingChartData = formatDataForChart(employeesLeavingByYear);
-        const leavingChartScript = createChart(leavingChartData);
+        const startingChartData = formatDataForChart(employeesStartingByYear);
 
-        // console.log(leavingChartScript);
-        // console.log( allEmployeeChartScript)
-
-        
+         const leavingChartScript = createChart(leavingChartData, startingChartData );
+         console.log("here,", leavingChartScript)
 
         res.render('index', {
           msg: 'File Uploaded!',
           showChart: true,
           leavingChartScript,
-          test: `const chart1 = new CanvasJS.Chart("chartContainer", {
+          test: `const chart = new CanvasJS.Chart("chartContainer", {
             "theme": "light1",
             "animationEnabled": false,
             "title": {
               "text": "2017"
             },
             "data": [{
-              "type": "column",
-              "dataPoints": [{
+              "type": "stackedColumn",
+              "data: [{
                 "label": "Quarter 1",
                 "y": 6
               }, {
@@ -136,59 +131,35 @@ app.post('/upload', (req, res) => {
               }, {
                 "label": "Quarter 4",
                 "y": 1
-              }]
-            }]
-          });
-          chart1.render();`
-        });
+              },
+             ]
+          }
+          
 
-
-
-        res.render('index', {
-          msg: 'File Uploaded!',
-          showChart2: true,
-          allEmployeeChartScript,
-          test: `const chart2 = new CanvasJS.Chart("chartContainer2", {
-            "theme": "light1",
-            "animationEnabled": false,
-            "title": {
-              "text": "All Employees"
+          {
+            "type": "stackedColumn",
+            "data: [{
+              "label": "Quarter 1",
+              "y": 12
+            }, {
+              "label": "Quarter 2",
+              "y": 0
+            }, {
+              "label": "Quarter 3",
+              "y": 2
+            }, {
+              "label": "Quarter 4",
+              "y": 1
             },
-            "data": [{
-              "type": "line",
-              
-              "dataPoints": [{
-                "label": "Quarter 1",
-                "y": 6
-              }, {
-                "label": "Quarter 2",
-                "y": 0
-              }, {
-                "label": "Quarter 3",
-                "y": 2
-              }, {
-                "label": "Quarter 4",
-                "y": 1
-              }]
-
-            }]
-          });
-          chart2.render();`
+           ]
+        }
+          
+          
+          );
+          chart.render();`
         });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
 
       }
     }
