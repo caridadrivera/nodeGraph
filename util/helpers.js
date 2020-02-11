@@ -2,7 +2,6 @@
 
 ///////*************LEAVING EMPLOYEES HELPERS*******************/////////////
 
-
 exports.formatDataForChart = (data) => {
     const years = Object.keys(data);
     return chartData = years.map((year) => {
@@ -30,37 +29,11 @@ exports.formatDataForChart = (data) => {
               label: 'Quarter 4',
               y: data[year]['q4']
             },
-          ]
+          ],
+
+           
         },
-
-
-        {
-          type: "stackedColumn",
-             dataPoints: [{
-                 label: 'Quarter 1',
-                 y: - data[year]['q1']
-               },
-               {
-                 label: 'Quarter 2',
-                 y: - data[year]['q2']
-               },
-               {
-                 label: 'Quarter 3',
-                 y: - data[year]['q3']
-               },
-               {
-                 label: 'Quarter 4',
-                 y: - data[year]['q4']
-               },
-             ]
-           }
-      
-      
-      
-      
-      
-      
-        ]
+        ],  
 
       }
     });
@@ -68,7 +41,7 @@ exports.formatDataForChart = (data) => {
 
 
   
-  exports.createChart = (chartData) => {
+  exports.createChart = (chartData, chartData2) => {
     let chartScript = 'window.onload = function () {';
     for (let i = 0; i < chartData.length; i++) {
       chartScript += `

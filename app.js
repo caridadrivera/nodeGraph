@@ -33,11 +33,12 @@ app.get('/', (req, res) => res.render('index'));
 
 app.post('/upload', (req, res) => {
   // a) Calculates the number of employees joining and leaving each quarter 
-  // (or every 3 months) for each year. Start date and end date
+  // (or every 3 months) for the year. The Year Where people left was only 2017
   upload(req, res, (err) => {
    
-    let employeesLeavingByYear = {};
-    let employeesStartingByYear = {};
+    //declaring global variable in order to have access to it in the other iteration.
+    let EMPLOYEES_LEAVING = {};
+    let employeesStarting = {};
    
     const data = require(`./public/uploads/${req.file.filename}`);
     //calculating employees with end_date as they all have start_date in order to get the joining/leaving
@@ -47,45 +48,46 @@ app.post('/upload', (req, res) => {
         const monthStr = data[i].dates.end_date.split('-')[1];
         const month = parseInt(monthStr, 10);
 
-        if (employeesLeavingByYear.hasOwnProperty(year)) {
-          getQuarterByMonth(employeesLeavingByYear[year], month);
+        if (EMPLOYEES_LEAVING.hasOwnProperty(year)) {
+          getQuarterByMonth(EMPLOYEES_LEAVING[year], month);
         } else {
-          employeesLeavingByYear[year] = {
+          EMPLOYEES_LEAVING[year] = {
             q1: 0,
             q2: 0,
             q3: 0,
             q4: 0,//trying to figure out why q4 is not increased
           }
         //BUG :going through each quarter again because at Q4, the year did not yet exist in the data.
-        getQuarterByMonth(employeesLeavingByYear[year], month);
+        getQuarterByMonth(EMPLOYEES_LEAVING[year], month);
         }
       }
     }
 
-
     
-    //b) all employees chart. filter out people on the board
-    //I want to grab all the titles in my entry, put them in an array, filter through the array
+
     data.forEach((entry) => {
+      // console.log(EMPLOYEES_LEAVING)
       if(entry.dates.hasOwnProperty('start_date')){
         const startYear = entry.dates.start_date.split('-')[0]
         const startMonthStr = entry.dates.start_date.split('-')[1];
         const startMonth = parseInt(startMonthStr, 10);
-        // console.log(typeof entry.title)
-       
-        if(employeesStartingByYear.hasOwnProperty(startYear)){
-         getQuarterByMonth(employeesStartingByYear[startYear], startMonth);
-        } else {
-          employeesStartingByYear[startYear] = {
+  
+      if(employeesStarting.hasOwnProperty(startYear)){
+         getQuarterByMonth(employeesStarting[startYear], startMonth);
+        } else if(EMPLOYEES_LEAVING.hasOwnProperty(startYear)){
+          employeesStarting[startYear] = {
             q1: 0,
             q2: 0,
             q3: 0,
             q4: 0,
           }
-          getQuarterByMonth(employeesStartingByYear[startYear], startMonth);
+          getQuarterByMonth(employeesStarting[startYear], startMonth);
         }
-      } 
+      }
+      
     });
+
+     console.log(employeesStarting)
 
   
     if(err){
@@ -101,63 +103,48 @@ app.post('/upload', (req, res) => {
       } else {
 
       
-        const leavingChartData = formatDataForChart(employeesLeavingByYear);
-        const startingChartData = formatDataForChart(employeesStartingByYear);
+        const leavingChartData = formatDataForChart(EMPLOYEES_LEAVING);
+        const startingChartData = formatDataForChart(employeesStarting);
 
-         const leavingChartScript = createChart(leavingChartData, startingChartData );
-         console.log("here,", leavingChartScript)
+         const leavingChartScript = createChart(leavingChartData);
+         const joiningChartScript = createChart(startingChartData);
+         
+        //  console.log("here,", joiningChartScript)
+        //  console.log("there", leavingChartScript)
 
         res.render('index', {
           msg: 'File Uploaded!',
           showChart: true,
           leavingChartScript,
-          test: `const chart = new CanvasJS.Chart("chartContainer", {
-            "theme": "light1",
-            "animationEnabled": false,
-            "title": {
-              "text": "2017"
-            },
-            "data": [{
-              "type": "stackedColumn",
-              "data: [{
-                "label": "Quarter 1",
-                "y": 6
-              }, {
-                "label": "Quarter 2",
-                "y": 0
-              }, {
-                "label": "Quarter 3",
-                "y": 2
-              }, {
-                "label": "Quarter 4",
-                "y": 1
-              },
-             ]
-          }
           
-
-          {
-            "type": "stackedColumn",
-            "data: [{
-              "label": "Quarter 1",
-              "y": 12
-            }, {
-              "label": "Quarter 2",
-              "y": 0
-            }, {
-              "label": "Quarter 3",
-              "y": 2
-            }, {
-              "label": "Quarter 4",
-              "y": 1
-            },
-           ]
-        }
+          // test: `const chart = new CanvasJS.Chart("chartContainer", {
+          //   "theme": "light1",
+          //   "animationEnabled": false,
+          //   "title": {
+          //     "text": "2017"
+          //   },
+          //   "data": [{
+          //     "type": "column",
+          //     "data: [{
+          //       "label": "Quarter 1",
+          //       "y": 6
+          //     }, {
+          //       "label": "Quarter 2",
+          //       "y": 0
+          //     }, {
+          //       "label": "Quarter 3",
+          //       "y": 2
+          //     }, {
+          //       "label": "Quarter 4",
+          //       "y": 1
+          //     },
+          //    ]} 
           
+          // );
+          // chart.render();`, 
           
-          );
-          chart.render();`
         });
+
 
         
 
