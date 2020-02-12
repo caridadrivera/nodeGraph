@@ -1,10 +1,8 @@
 
-
-///////*************LEAVING EMPLOYEES HELPERS*******************/////////////
-
-exports.formatDataForChart = (data) => {
+exports.formatDataForChart = (data, dataTwo) => {
     const years = Object.keys(data);
     return chartData = years.map((year) => {
+      console.log(year)
       return {
         theme: "light1", // "light2", "dark1", "dark2"
         animationEnabled: false, // change to true		
@@ -33,6 +31,35 @@ exports.formatDataForChart = (data) => {
 
            
         },
+
+
+        {
+          type: "stackedColumn",
+             dataPoints: [{
+                 label: 'Quarter 1',
+                 y: -dataTwo[year]['q1']
+               },
+               {
+                 label: 'Quarter 2',
+                 y: -dataTwo[year]['q2']
+               },
+               {
+                 label: 'Quarter 3',
+                 y: -dataTwo[year]['q3']
+               },
+               {
+                 label: 'Quarter 4',
+                 y: -dataTwo[year]['q4']
+               },
+             ],
+   
+              
+           },
+
+
+
+
+
         ],  
 
       }
@@ -41,7 +68,7 @@ exports.formatDataForChart = (data) => {
 
 
   
-  exports.createChart = (chartData, chartData2) => {
+  exports.createChart = (chartData) => {
     let chartScript = 'window.onload = function () {';
     for (let i = 0; i < chartData.length; i++) {
       chartScript += `

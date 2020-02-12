@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const path = require('path');
 
 
-const {formatData, formatDataForChart, createChart, getQuarterByMonth, createAllEmployeeChart} = require('./util/helpers.js');
+const {formatData, formatLeavingChart, formatDataForChart, createChart, getQuarterByMonth, createAllEmployeeChart} = require('./util/helpers.js');
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -66,7 +66,6 @@ app.post('/upload', (req, res) => {
     
 
     data.forEach((entry) => {
-      // console.log(EMPLOYEES_LEAVING)
       if(entry.dates.hasOwnProperty('start_date')){
         const startYear = entry.dates.start_date.split('-')[0]
         const startMonthStr = entry.dates.start_date.split('-')[1];
@@ -88,7 +87,7 @@ app.post('/upload', (req, res) => {
     });
 
      console.log(employeesStarting)
-
+     console.log(EMPLOYEES_LEAVING)
   
     if(err){
       res.render('index', {
@@ -103,45 +102,20 @@ app.post('/upload', (req, res) => {
       } else {
 
       
-        const leavingChartData = formatDataForChart(EMPLOYEES_LEAVING);
-        const startingChartData = formatDataForChart(employeesStarting);
+        const leavingAndJoiningChartData = formatDataForChart(employeesStarting, EMPLOYEES_LEAVING);
+        // const startingChartData = formatDataForChart(employeesStarting);
 
-         const leavingChartScript = createChart(leavingChartData);
-         const joiningChartScript = createChart(startingChartData);
+        const leavingChartScript = createChart(leavingAndJoiningChartData);
+        // const joiningChartScript = createChart(startingChartData);
          
-        //  console.log("here,", joiningChartScript)
-        //  console.log("there", leavingChartScript)
+        
+          console.log("there", leavingChartScript)
 
         res.render('index', {
           msg: 'File Uploaded!',
           showChart: true,
           leavingChartScript,
-          
-          // test: `const chart = new CanvasJS.Chart("chartContainer", {
-          //   "theme": "light1",
-          //   "animationEnabled": false,
-          //   "title": {
-          //     "text": "2017"
-          //   },
-          //   "data": [{
-          //     "type": "column",
-          //     "data: [{
-          //       "label": "Quarter 1",
-          //       "y": 6
-          //     }, {
-          //       "label": "Quarter 2",
-          //       "y": 0
-          //     }, {
-          //       "label": "Quarter 3",
-          //       "y": 2
-          //     }, {
-          //       "label": "Quarter 4",
-          //       "y": 1
-          //     },
-          //    ]} 
-          
-          // );
-          // chart.render();`, 
+         
           
         });
 
