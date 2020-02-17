@@ -1,8 +1,52 @@
+exports.formatAllDataForChart = (data) => {
+  const years = Object.keys(data);
+  return chartData = years.map((year) => {
+  
+    return {
+      theme: "light1", // "light2", "dark1", "dark2"
+      animationEnabled: false, // change to true		
+      title: {
+        text: "All Employees"
+      },
+      data: [{
+     color: "green",
+     type: "line",
+        dataPoints: [{
+            label: 'Quarter 1',
+            y: data[year]['q1']
+          },
+          {
+            label: 'Quarter 2',
+            y: data[year]['q2']
+          },
+          {
+            label: 'Quarter 3',
+            y: data[year]['q3']
+          },
+          {
+            label: 'Quarter 4',
+            y: data[year]['q4']
+          },
+        ],
+
+         
+      },
+
+      ],  
+
+    }
+  });
+};
+
+
+
+
+//**********FORMAT CHART FOR JOINING AND LEAVING****************** */
 
 exports.formatDataForChart = (data, dataTwo) => {
     const years = Object.keys(data);
     return chartData = years.map((year) => {
-      console.log(year)
+    
       return {
         theme: "light1", // "light2", "dark1", "dark2"
         animationEnabled: false, // change to true		
@@ -10,6 +54,7 @@ exports.formatDataForChart = (data, dataTwo) => {
           text: "Joined Employees Leaving"
         },
         data: [{
+       color: "green",
        type: "stackedColumn",
           dataPoints: [{
               label: 'Quarter 1',
@@ -56,10 +101,6 @@ exports.formatDataForChart = (data, dataTwo) => {
               
            },
 
-
-
-
-
         ],  
 
       }
@@ -69,16 +110,34 @@ exports.formatDataForChart = (data, dataTwo) => {
 
   
   exports.createChart = (chartData) => {
-    let chartScript = 'window.onload = function () {';
+    let chartScript ='' ;
     for (let i = 0; i < chartData.length; i++) {
       chartScript += `
         const chart${i} = new CanvasJS.Chart("chartContainer", ${JSON.stringify(chartData[i])})
         chart${i}.render();
       `;
     }
-    chartScript += '}';
     return chartScript;
   };
+
+
+
+
+
+
+  exports.createAllEmployeeChart = (chartData2) => {
+    let chartScript2 = '';
+    for (let i = 0; i < chartData2.length; i++) {
+      chartScript2 += `
+        const chart2${i} = new CanvasJS.Chart("chartContainer2", ${JSON.stringify(chartData2[i])})
+        chart2${i}.render();
+      `;
+    }
+    return chartScript2;
+  };
+
+
+
 
   
   exports.getQuarterByMonth = (data, month) => {
@@ -103,4 +162,6 @@ exports.formatDataForChart = (data, dataTwo) => {
     }
   };
   
+  
+
   

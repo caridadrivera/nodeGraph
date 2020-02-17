@@ -24,20 +24,47 @@
     </form>
     <br>
 
-  
     <div id="chartContainer" style="height: 300px; width: 100%;">
       <% if (typeof showChart !== 'undefined') { %>
-        <script type="text/javascript"> <%- leavingChartScript, %>
+        <script type="text/javascript"> 
+          window.onload = function(){
+            <%- leavingChartScript %>
+            <%- allDataChart %>
+          }
+           
+    
         </script>
      <% } %>
     </div>
 
-  </div>\
-   
+
+    <div id="chartContainer2" style="height: 300px; width: 100%;">
+      <% if (typeof showOtherChart !== 'undefined') { %>
+      
+     <% } %> 
+    </div>
+
+  </div>
+
+
+
+
 
 
     
 
+     
+  <br>
+    
+
+   
+
+
+   
+
+
+  
+     
   <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="

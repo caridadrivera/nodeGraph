@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const path = require('path');
 
 
-const {formatData, formatLeavingChart, formatDataForChart, createChart, getQuarterByMonth, createAllEmployeeChart} = require('./util/helpers.js');
+const {formatAllDataForChart, formatLeavingChart, formatDataForChart, createChart, getQuarterByMonth, createAllEmployeeChart} = require('./util/helpers.js');
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -32,33 +32,37 @@ app.use('/styling', express.static('styling'))
 app.get('/', (req, res) => res.render('index'));
 
 app.post('/upload', (req, res) => {
+
   // a) Calculates the number of employees joining and leaving each quarter 
   // (or every 3 months) for the year. The Year Where people left was only 2017
   upload(req, res, (err) => {
    
-    //declaring global variable in order to have access to it in the other iteration.
+    //declaring global variable in order to have access to it in the other iteration
     let EMPLOYEES_LEAVING = {};
     let employeesStarting = {};
+    let allEmployees = {};
+    let allTitles = [];
+
    
     const data = require(`./public/uploads/${req.file.filename}`);
     //calculating employees with end_date as they all have start_date in order to get the joining/leaving
     for (let i = 0; i < data.length - 1; i++) {
       if (data[i].dates.hasOwnProperty('end_date')) {
-        const year = data[i].dates.end_date.split('-')[0];
-        const monthStr = data[i].dates.end_date.split('-')[1];
-        const month = parseInt(monthStr, 10);
+        const endYear = data[i].dates.end_date.split('-')[0];
+        const endMonthStr = data[i].dates.end_date.split('-')[1];
+        const endMonth = parseInt(endMonthStr, 10);
 
-        if (EMPLOYEES_LEAVING.hasOwnProperty(year)) {
-          getQuarterByMonth(EMPLOYEES_LEAVING[year], month);
+        if (EMPLOYEES_LEAVING.hasOwnProperty(endYear)) {
+          getQuarterByMonth(EMPLOYEES_LEAVING[endYear], endMonth);
         } else {
-          EMPLOYEES_LEAVING[year] = {
+          EMPLOYEES_LEAVING[endYear] = {
             q1: 0,
             q2: 0,
             q3: 0,
             q4: 0,//trying to figure out why q4 is not increased
           }
-        //BUG :going through each quarter again because at Q4, the year did not yet exist in the data.
-        getQuarterByMonth(EMPLOYEES_LEAVING[year], month);
+        //BUG :going through each quarter again because at Q4, the endYear did not yet exist in the data.
+        getQuarterByMonth(EMPLOYEES_LEAVING[endYear], endMonth);
         }
       }
     }
@@ -86,8 +90,43 @@ app.post('/upload', (req, res) => {
       
     });
 
-     console.log(employeesStarting)
-     console.log(EMPLOYEES_LEAVING)
+
+    
+    // b) Calculates the total number of employees in each quarter for each year.
+    // Ignore any employees that are on the board as they are not technically employees.
+
+    data.forEach((entry) => {
+      
+      if(entry.dates.hasOwnProperty('start_date')){
+        const year = entry.dates.start_date.split('-')[0]
+        const monthStr = entry.dates.start_date.split('-')[1];
+        const month = parseInt(monthStr, 10);  
+        const title = entry.title;
+   
+      
+  
+      if(allEmployees.hasOwnProperty(year)){
+        if(title[0] !== 'V' && title !== 'CFO' && !title.includes('Director') && !title.includes('Board') && !title.includes('CTO')){
+          getQuarterByMonth(allEmployees[year], month);
+          
+        }
+            
+        } else {
+          allEmployees[year] = {
+            q1: 0,
+            q2: 0,
+            q3: 0,
+            q4: 0,
+          }
+          getQuarterByMonth(allEmployees[year], month);
+        }
+      }
+     
+      
+    });
+
+
+
   
     if(err){
       res.render('index', {
@@ -100,22 +139,19 @@ app.post('/upload', (req, res) => {
        
         });
       } else {
-
-      
+ 
         const leavingAndJoiningChartData = formatDataForChart(employeesStarting, EMPLOYEES_LEAVING);
-        // const startingChartData = formatDataForChart(employeesStarting);
-
         const leavingChartScript = createChart(leavingAndJoiningChartData);
-        // const joiningChartScript = createChart(startingChartData);
-         
-        
-          console.log("there", leavingChartScript)
-
+       
+        const allChartData = formatAllDataForChart(allEmployees);
+        const allDataChart= createAllEmployeeChart(allChartData);
+      
         res.render('index', {
           msg: 'File Uploaded!',
           showChart: true,
           leavingChartScript,
-         
+          showOtherChart: true,
+          allDataChart,
           
         });
 
