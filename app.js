@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const path = require('path');
 
 
-const {formatAllDataForChart, formatLeavingChart, formatDataForChart, createChart, getQuarterByMonth, createAllEmployeeChart} = require('./util/helpers.js');
+const {formatAllData, formatAllDataForChart, formatLeavingChart, formatDataForChart, createChart, getQuarterByMonth, createAllEmployeeChart} = require('./util/helpers.js');
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -142,10 +142,16 @@ app.post('/upload', (req, res) => {
  
         const leavingAndJoiningChartData = formatDataForChart(employeesStarting, EMPLOYEES_LEAVING);
         const leavingChartScript = createChart(leavingAndJoiningChartData);
-       
+        console.log(leavingAndJoiningChartData)
+        console.log("LEAVING:", leavingChartScript)
         const allChartData = formatAllDataForChart(allEmployees);
-        const allDataChart= createAllEmployeeChart(allChartData);
-      
+        const formatedData = formatAllData(allChartData)
+        const allDataChart= createAllEmployeeChart(formatedData);
+
+        console.log("ALL CHART DATA", formatedData)
+        console.log("ALL", allDataChart)
+
+
         res.render('index', {
           msg: 'File Uploaded!',
           showChart: true,
