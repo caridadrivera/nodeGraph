@@ -33,19 +33,22 @@ app.get('/', (req, res) => res.render('index'));
 
 app.post('/upload', (req, res) => {
 
-  // a) Calculates the number of employees joining and leaving each quarter 
-  // (or every 3 months) for the year. The Year Where people left was only 2017
+
+
   upload(req, res, (err) => {
-   
-    //declaring global variable in order to have access to it in the other iteration
+
     let EMPLOYEES_LEAVING = {};
     let employeesStarting = {};
     let allEmployees = {};
-    let allTitles = [];
+    let boardMembers = {};
 
    
     const data = require(`./public/uploads/${req.file.filename}`);
-    //calculating employees with end_date as they all have start_date in order to get the joining/leaving
+   
+   
+  // a) Calculates the number of employees joining and leaving each quarter 
+  // (or every 3 months) for the year. The Year Where people left was only 2017
+   
     for (let i = 0; i < data.length - 1; i++) {
       if (data[i].dates.hasOwnProperty('end_date')) {
         const endYear = data[i].dates.end_date.split('-')[0];
@@ -67,7 +70,6 @@ app.post('/upload', (req, res) => {
       }
     }
 
-    
 
     data.forEach((entry) => {
       if(entry.dates.hasOwnProperty('start_date')){
@@ -91,7 +93,9 @@ app.post('/upload', (req, res) => {
     });
 
 
+   
     
+
     // b) Calculates the total number of employees in each quarter for each year.
     // Ignore any employees that are on the board as they are not technically employees.
 
@@ -102,7 +106,6 @@ app.post('/upload', (req, res) => {
         const monthStr = entry.dates.start_date.split('-')[1];
         const month = parseInt(monthStr, 10);  
         const title = entry.title;
-   
       
   
       if(allEmployees.hasOwnProperty(year)){
@@ -112,6 +115,7 @@ app.post('/upload', (req, res) => {
         }
             
         } else {
+          
           allEmployees[year] = {
             q1: 0,
             q2: 0,
@@ -126,7 +130,39 @@ app.post('/upload', (req, res) => {
     });
 
 
+    //c) Locate all Vice Presidents, CEO/CMO/COO/CTO/CxO titles and their start and end dates.
 
+    data.forEach((entry) => {
+      
+      if(entry.dates.hasOwnProperty('start_date')){
+        const startYr = entry.dates.start_date.split('-')[0]
+        const startMnthStr = entry.dates.start_date.split('-')[1];
+        const startMnth = parseInt(startMnthStr, 10);  
+        const titles = entry.title;
+      
+  
+      if(boardMembers.hasOwnProperty(startYr)){
+        if(titles[0] == 'V' && titles == 'CFO' && titles.includes('Director') && titles.includes('Board') && titles.includes('CTO')){
+          console.log("here?", titles)
+           getQuarterByMonth(boardMembers[startYr], startMnth);
+          
+        }
+            
+        } else {
+          
+          boardMembers[startYr] = {
+            q1: 0,
+            q2: 0,
+            q3: 0,
+            q4: 0,
+          }
+          getQuarterByMonth(boardMembers[startYr], startMnth);
+        }
+      }
+     
+    });
+   
+    console.log(boardMembers)
   
     if(err){
       res.render('index', {
@@ -142,15 +178,12 @@ app.post('/upload', (req, res) => {
  
         const leavingAndJoiningChartData = formatDataForChart(employeesStarting, EMPLOYEES_LEAVING);
         const leavingChartScript = createChart(leavingAndJoiningChartData);
-        console.log(leavingAndJoiningChartData)
-        console.log("LEAVING:", leavingChartScript)
+     
         const allChartData = formatAllDataForChart(allEmployees);
         const formatedData = formatAllData(allChartData)
         const allDataChart= createAllEmployeeChart(formatedData);
 
-        console.log("ALL CHART DATA", formatedData)
-        console.log("ALL", allDataChart)
-
+        
 
         res.render('index', {
           msg: 'File Uploaded!',

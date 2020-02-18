@@ -1,3 +1,13 @@
+
+
+
+
+
+
+
+///////**********FORMAT FOR ALLL EMPLOYEES except BOARD ****************** */
+
+
 exports.formatAllDataForChart = (data) => {
   const years = Object.keys(data);
 
@@ -35,13 +45,6 @@ exports.formatAllDataForChart = (data) => {
 };
 
 
-
-
-
-
-
-
-
 exports.formatAllData = (data) => {
     return {
       theme: "light1", 
@@ -72,7 +75,7 @@ exports.createAllEmployeeChart = (chartData2) => {
 
 
 
-//**********FORMAT CHART FOR JOINING AND LEAVING****************** */
+//**********FORMAT CHART FOR JOINING // LEAVING****************** */
 
 exports.formatDataForChart = (data, dataTwo) => {
     const years = Object.keys(data);
