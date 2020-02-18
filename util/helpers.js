@@ -8,8 +8,9 @@ exports.formatAllDataForChart = (data) => {
      color: "blue",
      type: "line",
         dataPoints: [{
+            indexLabel: year,
             label: 'Quarter 1',
-            y: data[year]['q1']
+            y: data[year]['q1'],
           },
           {
             label: 'Quarter 2',
