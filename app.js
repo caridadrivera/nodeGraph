@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const path = require('path');
 
 
-const {formatAllData, formatAllDataForChart, formatLeavingChart, formatDataForChart, createChart, getQuarterByMonth, createAllEmployeeChart} = require('./util/helpers.js');
+const {formatAllDataForBoard, formatAllBoardData, createAllBoardChart, formatAllData, formatAllDataForChart, formatLeavingChart, formatDataForChart, createChart, getQuarterByMonth, createAllEmployeeChart} = require('./util/helpers.js');
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -41,7 +41,7 @@ app.post('/upload', (req, res) => {
     let employeesStarting = {};
     let allEmployees = {};
     let boardMembers = {};
-
+   
    
     const data = require(`./public/uploads/${req.file.filename}`);
    
@@ -70,7 +70,6 @@ app.post('/upload', (req, res) => {
       }
     }
 
-
     data.forEach((entry) => {
       if(entry.dates.hasOwnProperty('start_date')){
         const startYear = entry.dates.start_date.split('-')[0]
@@ -93,12 +92,9 @@ app.post('/upload', (req, res) => {
     });
 
 
-   
-    
 
     // b) Calculates the total number of employees in each quarter for each year.
     // Ignore any employees that are on the board as they are not technically employees.
-
     data.forEach((entry) => {
       
       if(entry.dates.hasOwnProperty('start_date')){
@@ -130,39 +126,34 @@ app.post('/upload', (req, res) => {
     });
 
 
-    //c) Locate all Vice Presidents, CEO/CMO/COO/CTO/CxO titles and their start and end dates.
-
+    //c) Locate all Vice Presidents, CEO/CMO/COO/CTO/CxO titles and their start (and end dates(but there are no vp's with end dates)).
+    
     data.forEach((entry) => {
-      
       if(entry.dates.hasOwnProperty('start_date')){
-        const startYr = entry.dates.start_date.split('-')[0]
-        const startMnthStr = entry.dates.start_date.split('-')[1];
-        const startMnth = parseInt(startMnthStr, 10);  
-        const titles = entry.title;
+       const year = entry.dates.start_date.split('-')[0]
+       const monthStr = entry.dates.start_date.split('-')[1];
+       const month = parseInt(monthStr, 10);  
+       const titles = entry.title;
       
-  
-      if(boardMembers.hasOwnProperty(startYr)){
-        if(titles[0] == 'V' && titles == 'CFO' && titles.includes('Director') && titles.includes('Board') && titles.includes('CTO')){
-          console.log("here?", titles)
-           getQuarterByMonth(boardMembers[startYr], startMnth);
-          
+    
+       if(titles === 'CTO' || titles === 'CFO' || titles.startsWith('V')){ 
+        console.log("titles:", titles)
+        boardMembers[year] = {
+          q1: 0,
+          q2: 0,
+          q3: 0,
+          q4: 0,
         }
-            
-        } else {
-          
-          boardMembers[startYr] = {
-            q1: 0,
-            q2: 0,
-            q3: 0,
-            q4: 0,
-          }
-          getQuarterByMonth(boardMembers[startYr], startMnth);
+          getQuarterByMonth(boardMembers[year], month);   
         }
-      }
+      
+   
+        }
+      
      
     });
-   
-    console.log(boardMembers)
+
+
   
     if(err){
       res.render('index', {
@@ -175,7 +166,10 @@ app.post('/upload', (req, res) => {
        
         });
       } else {
- 
+        const allBoardMembersData = formatAllDataForBoard(boardMembers);
+        const allBoardData = formatAllBoardData(allBoardMembersData);
+        const allBoardMembersChart = createAllBoardChart(allBoardData);
+
         const leavingAndJoiningChartData = formatDataForChart(employeesStarting, EMPLOYEES_LEAVING);
         const leavingChartScript = createChart(leavingAndJoiningChartData);
      
@@ -183,7 +177,9 @@ app.post('/upload', (req, res) => {
         const formatedData = formatAllData(allChartData)
         const allDataChart= createAllEmployeeChart(formatedData);
 
+       console.log("datahereee:", boardMembers)
         
+       
 
         res.render('index', {
           msg: 'File Uploaded!',
@@ -191,6 +187,7 @@ app.post('/upload', (req, res) => {
           leavingChartScript,
           showOtherChart: true,
           allDataChart,
+          allBoardMembersChart,
           
         });
 

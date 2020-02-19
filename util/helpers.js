@@ -1,4 +1,77 @@
 
+///////////********CREATE ALL BOARD CHART ********* */
+
+exports.createAllBoardChart = (chartData3) => {
+  let chartScript3 = 'const chart3 = new CanvasJS.Chart("chartContainer3",';
+    chartScript3 += `
+       ${JSON.stringify(chartData3)})
+      chart3.render();
+    `
+  return chartScript3;
+
+  
+};
+
+
+exports.formatAllDataForBoard = (data) => {
+  const years = Object.keys(data);
+
+  return chartData = years.map((year) => {
+  
+    return {
+     
+     color: "green",
+     type: "line",
+     width: 340,
+     markerSize: 10,
+        dataPoints: [{
+          indexLabel: year,
+          indexLabelFontSize: 8,
+            label: 'Quarter 1',
+            y: data[year]['q1'],
+          },
+          {
+            indexLabel: year,
+            indexLabelFontSize: 8,
+            label: 'Quarter 2',
+            y: data[year]['q2']
+          },
+          {
+            indexLabel: year,
+            indexLabelFontSize: 8,
+            label: 'Quarter 3',
+            y: data[year]['q3']
+          },
+          {
+            indexLabel: year,
+            indexLabelFontSize: 8,
+            label: 'Quarter 4',
+            y: data[year]['q4']
+          },
+        ],
+
+        
+     
+      
+    }
+    
+  });
+};
+
+
+exports.formatAllBoardData = (data) => {
+  return {
+    theme: "light1", 
+    animationEnabled: false, 		
+    title: {
+      text: "All Board"
+    },
+    data: data,  
+    
+  }
+  
+
+};
 
 
 
@@ -14,23 +87,28 @@ exports.formatAllDataForChart = (data) => {
   return chartData = years.map((year) => {
   
     return {
-     
+     height: 360,
+     width: 320,
      color: "blue",
      type: "line",
         dataPoints: [{
             indexLabel: year,
+            indexLabelFontSize: 8,
             label: 'Quarter 1',
             y: data[year]['q1'],
           },
           {
+     
             label: 'Quarter 2',
             y: data[year]['q2']
           },
           {
+            
             label: 'Quarter 3',
             y: data[year]['q3']
           },
-          {
+          { 
+           
             label: 'Quarter 4',
             y: data[year]['q4']
           },

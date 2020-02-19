@@ -30,6 +30,7 @@
           window.onload = function(){
             <%- leavingChartScript %>
             <%- allDataChart %>
+            <%- allBoardMembersChart %>
           }
            
     
@@ -39,6 +40,13 @@
 
 
     <div id="chartContainer2" style="height: 300px; width: 100%;">
+      <% if (typeof showOtherChart !== 'undefined') { %>
+      
+     <% } %> 
+    </div>
+
+
+    <div id="chartContainer3" style="height: 300px; width: 100%;">
       <% if (typeof showOtherChart !== 'undefined') { %>
       
      <% } %> 
