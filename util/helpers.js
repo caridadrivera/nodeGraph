@@ -21,7 +21,7 @@ exports.formatAllDataForBoard = (data) => {
     return {
      
      color: "green",
-     type: "line",
+     type: "column",
      width: 340,
      markerSize: 10,
         dataPoints: [{

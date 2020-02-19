@@ -41,7 +41,8 @@ app.post('/upload', (req, res) => {
     let employeesStarting = {};
     let allEmployees = {};
     let boardMembers = {};
-   
+    let allTitles = [];
+    let names = [];
    
     const data = require(`./public/uploads/${req.file.filename}`);
    
@@ -127,17 +128,20 @@ app.post('/upload', (req, res) => {
 
 
     //c) Locate all Vice Presidents, CEO/CMO/COO/CTO/CxO titles and their start (and end dates(but there are no vp's with end dates)).
-    
+    //made executive decision to create bar chart instead of line chart due to data displaying weirdly on the chart. 
     data.forEach((entry) => {
       if(entry.dates.hasOwnProperty('start_date')){
        const year = entry.dates.start_date.split('-')[0]
        const monthStr = entry.dates.start_date.split('-')[1];
        const month = parseInt(monthStr, 10);  
        const titles = entry.title;
-      
+       const profile = entry.profile
+       
     
-       if(titles === 'CTO' || titles === 'CFO' || titles.startsWith('V')){ 
-        console.log("titles:", titles)
+       if(titles === 'CFO' || titles.startsWith('V') || titles.startsWith("CTO")) { 
+      
+        allTitles.push(`${titles} `);
+        names.push(`${profile.firstName} `)
         boardMembers[year] = {
           q1: 0,
           q2: 0,
@@ -152,7 +156,7 @@ app.post('/upload', (req, res) => {
       
      
     });
-
+    // console.log(allTitles, names)
 
   
     if(err){
@@ -177,7 +181,7 @@ app.post('/upload', (req, res) => {
         const formatedData = formatAllData(allChartData)
         const allDataChart= createAllEmployeeChart(formatedData);
 
-       console.log("datahereee:", boardMembers)
+      //  console.log("datahereee:", boardMembers)
         
        
 
@@ -188,6 +192,8 @@ app.post('/upload', (req, res) => {
           showOtherChart: true,
           allDataChart,
           allBoardMembersChart,
+          allTitles,
+          names,
           
         });
 
