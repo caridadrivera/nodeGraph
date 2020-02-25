@@ -156,7 +156,7 @@ app.post('/upload', (req, res) => {
       
      
     });
-    // console.log(allTitles, names)
+    console.log(allTitles, names)
 
   
     if(err){
@@ -181,7 +181,6 @@ app.post('/upload', (req, res) => {
         const formatedData = formatAllData(allChartData)
         const allDataChart= createAllEmployeeChart(formatedData);
 
-      //  console.log("datahereee:", boardMembers)
         
        
 
@@ -189,7 +188,6 @@ app.post('/upload', (req, res) => {
           msg: 'File Uploaded!',
           showChart: true,
           leavingChartScript,
-          showOtherChart: true,
           allDataChart,
           allBoardMembersChart,
           allTitles,
