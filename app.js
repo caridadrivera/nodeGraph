@@ -190,8 +190,7 @@ app.post('/upload', (req, res) => {
           leavingChartScript,
           allDataChart,
           allBoardMembersChart,
-          allTitles,
-          names,
+        
           
         });
 
